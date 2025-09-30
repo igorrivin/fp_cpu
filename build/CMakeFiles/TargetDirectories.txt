@@ -1,0 +1,3 @@
+/Volumes/Lexar/fp_cpu/build/CMakeFiles/fg_sizes_cpu.dir
+/Volumes/Lexar/fp_cpu/build/CMakeFiles/edit_cache.dir
+/Volumes/Lexar/fp_cpu/build/CMakeFiles/rebuild_cache.dir

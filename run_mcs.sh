@@ -1,0 +1,22 @@
+ #!/usr/bin/env bash
+  set -euo pipefail
+
+  if [[ $# -lt 2 ]]; then
+    echo "Usage: $0 <num_iterations> <parallel_jobs> [n] [d]" >&2
+    exit 1
+  fi
+
+  ITER=$1
+  JOBS=$2
+  N=${3:-10000}
+  D=${4:-2}
+
+  export OMP_NUM_THREADS=1  # leave processes single-threaded
+
+  parallel -j "${JOBS}" --keep-order --line-buffer '
+    run={}
+    tmp=$(mktemp -t fgpoints_${run}.XXXXXX.bin)
+    trap "rm -f \"$tmp\"" EXIT
+    build/fg_sizes_cpu --n '"${N}"' --d '"${D}"' --gen-points --out "$tmp" >/dev/null
+    build/fg_sizes_cpu --n '"${N}"' --d '"${D}"' --k 2 --points "$tmp" --compute-next  --mean_only
+  ' ::: $(seq 1 "${ITER}")

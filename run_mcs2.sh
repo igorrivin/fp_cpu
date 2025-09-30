@@ -1,0 +1,12 @@
+  #!/usr/bin/env bash
+  set -euo pipefail
+  ITER=$1; JOBS=$2; N=${3:-10000}; D=${4:-2}
+  export OMP_NUM_THREADS=1
+
+  parallel -j "${JOBS}" --keep-order --line-buffer '
+    run={}
+    tmp=$(mktemp -t fgpoints_${run}.XXXXXX.bin)
+    trap "rm -f \"$tmp\"" EXIT
+    build/fg_sizes_cpu --n '"${N}"' --d '"${D}"' --gen-points --out "$tmp" --seed "$run" >/dev/null
+    build/fg_sizes_cpu --n '"${N}"' --d '"${D}"' --k 2 --points "$tmp" --compute-next  --mean_only
+  ' ::: $(seq 1 "${ITER}")
